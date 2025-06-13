@@ -52,6 +52,43 @@ mongo_db = mongo_client["medical_maestro"]
 files_collection = mongo_db["patient_files"]
 
 # --- Endpoints ---
+@app.route('/')
+@app.route('/login')
+def login_page():
+    return app.send_static_file('medical_login_screen.html')
+
+@app.route('/welcome')
+def welcome_page():
+    return app.send_static_file('welcome_screen.html')
+
+@app.route('/patient')
+def patient_page():
+    return app.send_static_file('patient_screen.html')
+
+@app.route('/test-results')
+def test_results_page():
+    return app.send_static_file('medical_test_results.html')
+
+@app.route('/appointments')
+def appointments_page():
+    return app.send_static_file('appointments_screen.html')
+
+@app.route('/add-appointment')
+def add_appointment_page():
+    return app.send_static_file('add_appointment.html')
+
+@app.route('/add-patient')
+def add_patient_page():
+    return app.send_static_file('add_patient.html')
+
+@app.route('/add-user')
+def add_user_page():
+    return app.send_static_file('add_user.html')
+
+@app.route('/admin')
+def admin_dashboard():
+    return app.send_static_file('admin_dashboard.html')
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()

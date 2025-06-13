@@ -373,7 +373,7 @@
             const name = localStorage.getItem('selected_patient_name');
             if (name) {
                 localStorage.setItem('test_results_patient_name', name);
-                window.location.href = 'medical_test_results.html';
+                window.location.href = '/test-results';
             }
         });
 
@@ -447,7 +447,7 @@
                 return;
             }
             try {
-                const res = await fetch(`http://localhost:5000/patients/by_name?name=${encodeURIComponent(name)}`);
+                const res = await fetch(`/patients/by_name?name=${encodeURIComponent(name)}`);
                 if (res.ok) {
                     const p = await res.json();
                     detailsDiv.innerHTML = `

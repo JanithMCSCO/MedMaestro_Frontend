@@ -224,7 +224,7 @@
             return;
         }
         try {
-            const res = await fetch(`http://localhost:5000/patient_files?name=${encodeURIComponent(name)}`);
+            const res = await fetch(`/patient_files?name=${encodeURIComponent(name)}`);
             if (res.ok) {
                 const files = await res.json();
                 if (files.length === 0) {

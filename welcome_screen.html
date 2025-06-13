@@ -249,19 +249,17 @@
         // Add click functionality to menu buttons
         document.getElementById('appointments-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.href = 'appointments_screen.html';
+            window.location.href = '/appointments';
         });
 
         document.getElementById('test-results-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Navigating to Test Results...');
-            // In a real app, this would navigate to the test results screen
+            window.location.href = '/test-results';
         });
 
         document.getElementById('patient-registry-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            alert('Navigating to Patient Registry...');
-            // In a real app, this would navigate to the patient registry screen
+            window.location.href = '/patient';
         });
 
         // Add click functionality to the assistant icon

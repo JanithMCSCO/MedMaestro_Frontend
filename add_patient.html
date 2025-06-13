@@ -51,7 +51,7 @@
     async function loadPatients() {
       const tableBody = document.querySelector('#patientsTable tbody');
       tableBody.innerHTML = '';
-      const res = await fetch('http://localhost:5000/patients');
+      const res = await fetch('/patients');
       if (res.ok) {
         const patients = await res.json();
         patients.forEach(p => {
@@ -71,7 +71,7 @@
       const pre_existing_conditions = document.getElementById('pre_existing_conditions').value;
       const allergies = document.getElementById('allergies').value;
       const current_medications = document.getElementById('current_medications').value;
-      const res = await fetch('http://localhost:5000/patients', {
+      const res = await fetch('/patients', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ name, gender, dob, pre_existing_conditions, allergies, current_medications })

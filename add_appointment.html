@@ -43,7 +43,7 @@
     async function loadAppointments() {
       const tableBody = document.querySelector('#appointmentsTable tbody');
       tableBody.innerHTML = '';
-      const res = await fetch('http://localhost:5000/appointments');
+      const res = await fetch('/appointments');
       if (res.ok) {
         const appointments = await res.json();
         appointments.forEach(a => {
@@ -59,7 +59,7 @@
       errorDiv.textContent = '';
       const time = document.getElementById('time').value;
       const patient_name = document.getElementById('patient_name').value;
-      const res = await fetch('http://localhost:5000/appointments', {
+      const res = await fetch('/appointments', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ time, patient_name })

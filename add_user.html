@@ -45,7 +45,7 @@
     async function loadUsers() {
       const tableBody = document.querySelector('#usersTable tbody');
       tableBody.innerHTML = '';
-      const res = await fetch('http://localhost:5000/users');
+      const res = await fetch('/users');
       if (res.ok) {
         const users = await res.json();
         users.forEach(u => {
@@ -62,7 +62,7 @@
       const full_name = document.getElementById('fullName').value;
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
-      const res = await fetch('http://localhost:5000/users', {
+      const res = await fetch('/users', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ full_name, username, password })

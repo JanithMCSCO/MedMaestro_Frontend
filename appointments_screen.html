@@ -250,7 +250,7 @@
             const container = document.getElementById('appointmentsList');
             container.innerHTML = '';
             try {
-                const response = await fetch('http://localhost:5000/appointments');
+                const response = await fetch('/appointments');
                 if (response.ok) {
                     const appointments = await response.json();
                     appointments.forEach(app => {
@@ -264,7 +264,7 @@
                         row.querySelector('.patient-link').addEventListener('click', function(e) {
                             e.preventDefault();
                             localStorage.setItem('selected_patient_name', app.patient_name);
-                            window.location.href = 'patient_screen.html';
+                            window.location.href = '/patient';
                         });
                         container.appendChild(row);
                     });
