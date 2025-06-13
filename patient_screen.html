@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border: 3px solid #2c5c5c;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            min-height: 80vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logo {
+            width: 120px;
+            height: 80px;
+            background-color: #2c5c5c;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo .medical-text {
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .logo .maestro-text {
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .logo .cross {
+            font-size: 20px;
+            margin: 5px 0;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            height: calc(100vh - 200px);
+            min-height: 600px;
+        }
+
+        .left-panel {
+            display: grid;
+            grid-template-rows: auto 1fr 1fr;
+            gap: 20px;
+        }
+
+        .patient-details {
+            border: 2px solid #2c5c5c;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .patient-details h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .patient-info {
+            line-height: 1.6;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .patient-info div {
+            margin-bottom: 5px;
+        }
+
+        .content-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .transcript-section, .recommendations-section, .notes-section {
+            border: 2px solid #2c5c5c;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .transcript-content, .recommendations-content, .notes-content {
+            flex: 1;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-y: auto;
+        }
+
+        .notes-content {
+            resize: none;
+            font-family: inherit;
+            border: none;
+            outline: none;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-button {
+            padding: 18px 25px;
+            border: 2px solid #2c5c5c;
+            background-color: #f8f9fa;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-button:hover {
+            background-color: #2c5c5c;
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(44, 92, 92, 0.2);
+        }
+
+        .action-button:active {
+            transform: translateX(2px);
+            box-shadow: 0 2px 4px rgba(44, 92, 92, 0.2);
+        }
+
+        .assistant-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background-color: #2c5c5c;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .assistant-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: #7ed321;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .assistant-avatar::before {
+            content: '🩺';
+            color: #2c5c5c;
+        }
+
+        .assistant-avatar::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background-color: #7ed321;
+            border-radius: 50%;
+            border: 2px solid #2c5c5c;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 20px;
+            }
+
+            .right-panel {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .content-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .right-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .action-button {
+                font-size: 14px;
+                padding: 15px 20px;
+            }
+
+            .assistant-icon {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .assistant-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        /* Animation for real-time updates */
+        .transcript-content.updating {
+            border-left: 4px solid #7ed321;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { border-left-color: #7ed321; }
+            50% { border-left-color: #2c5c5c; }
+            100% { border-left-color: #7ed321; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="page-title">Patient Screen</div>
+            <div class="logo">
+                <div class="cross">✚</div>
+                <div class="medical-text">MEDICAL</div>
+                <div class="maestro-text">MAESTRO</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="patient-details">
+                    <h3>Patient Details</h3>
+                    <div id="patientDetails">
+                        Loading patient details...
+                    </div>
+                </div>
+
+                <div class="content-row">
+                    <div class="transcript-section">
+                        <div class="section-title">Real time transcript</div>
+                        <div class="transcript-content" id="transcript">
+                            <div style="color: #666; font-style: italic;">Doctor: Good morning, John. How are you feeling today?</div>
+                            <div style="color: #333; margin-top: 10px;">Patient: I've been having some chest pain and shortness of breath, especially when I exercise.</div>
+                            <div style="color: #666; font-style: italic; margin-top: 10px;">Doctor: Can you describe the pain? Is it sharp or more of a pressure?</div>
+                            <div style="color: #333; margin-top: 10px;">Patient: It's more like a pressure, and it radiates to my left arm sometimes.</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendations-section">
+                        <div class="section-title">Real time Recommendations</div>
+                        <div class="recommendations-content" id="recommendations">
+                            <div style="padding: 10px; background-color: #e8f5e8; border-left: 4px solid #7ed321; margin-bottom: 10px;">
+                                <strong>Recommended:</strong> Consider ECG and cardiac enzymes given symptoms
+                            </div>
+                            <div style="padding: 10px; background-color: #fff3cd; border-left: 4px solid #ffc107; margin-bottom: 10px;">
+                                <strong>Caution:</strong> Patient allergic to ibuprofen - avoid NSAIDs
+                            </div>
+                            <div style="padding: 10px; background-color: #f8d7da; border-left: 4px solid #dc3545;">
+                                <strong>Alert:</strong> Chest pain with radiation - rule out cardiac cause
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notes-section">
+                    <div class="section-title">Manual notes</div>
+                    <textarea class="notes-content" placeholder="Enter your notes here..." id="notes">Patient presents with chest pain and dyspnea on exertion. Pain described as pressure-like with radiation to left arm. No previous cardiac history. Will order ECG and cardiac enzymes. Patient education provided regarding when to seek immediate care.</textarea>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <button class="action-button" id="past-visits-btn">Past visits</button>
+                <button class="action-button" id="test-results-btn">Test results</button>
+                <button class="action-button" id="order-tests-btn">Order Tests</button>
+                <button class="action-button" id="prescribe-medication-btn">Prescribe Medication</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="assistant-icon">
+        <div class="assistant-avatar"></div>
+    </div>
+
+    <script>
+        // Add click functionality to action buttons
+        document.getElementById('past-visits-btn').addEventListener('click', function() {
+            alert('Opening Past Visits...');
+        });
+
+        document.getElementById('test-results-btn').addEventListener('click', function() {
+            const name = localStorage.getItem('selected_patient_name');
+            if (name) {
+                localStorage.setItem('test_results_patient_name', name);
+                window.location.href = 'medical_test_results.html';
+            }
+        });
+
+        document.getElementById('order-tests-btn').addEventListener('click', function() {
+            alert('Opening Order Tests...');
+        });
+
+        document.getElementById('prescribe-medication-btn').addEventListener('click', function() {
+            alert('Opening Prescription Form...');
+        });
+
+        // Add click functionality to the assistant icon
+        document.querySelector('.assistant-icon').addEventListener('click', function() {
+            alert('Medical Assistant: I can help you with patient care recommendations!');
+        });
+
+        // Simulate real-time transcript updates
+        function simulateTranscriptUpdate() {
+            const transcript = document.getElementById('transcript');
+            const newEntries = [
+                { speaker: 'Doctor', text: 'Any family history of heart disease?' },
+                { speaker: 'Patient', text: 'Yes, my father had a heart attack at 55.' },
+                { speaker: 'Doctor', text: 'I\'d like to run some tests to be safe.' },
+                { speaker: 'Patient', text: 'That sounds good, doctor.' }
+            ];
+
+            let currentIndex = 0;
+            setInterval(() => {
+                if (currentIndex < newEntries.length) {
+                    const entry = newEntries[currentIndex];
+                    const div = document.createElement('div');
+                    div.style.marginTop = '10px';
+                    
+                    if (entry.speaker === 'Doctor') {
+                        div.style.color = '#666';
+                        div.style.fontStyle = 'italic';
+                        div.textContent = `Doctor: ${entry.text}`;
+                    } else {
+                        div.style.color = '#333';
+                        div.textContent = `Patient: ${entry.text}`;
+                    }
+                    
+                    transcript.appendChild(div);
+                    transcript.scrollTop = transcript.scrollHeight;
+                    transcript.classList.add('updating');
+                    
+                    setTimeout(() => {
+                        transcript.classList.remove('updating');
+                    }, 2000);
+                    
+                    currentIndex++;
+                }
+            }, 8000);
+        }
+
+        // Start the simulation after page load
+        setTimeout(simulateTranscriptUpdate, 3000);
+
+        // Auto-save notes functionality
+        const notesTextarea = document.getElementById('notes');
+        notesTextarea.addEventListener('input', function() {
+            // In a real app, this would save to a database
+            console.log('Notes auto-saved:', this.value);
+        });
+
+        window.addEventListener('DOMContentLoaded', async function() {
+            const detailsDiv = document.getElementById('patientDetails');
+            const name = localStorage.getItem('selected_patient_name');
+            if (!name) {
+                detailsDiv.textContent = 'No patient selected.';
+                return;
+            }
+            try {
+                const res = await fetch(`http://localhost:5000/patients/by_name?name=${encodeURIComponent(name)}`);
+                if (res.ok) {
+                    const p = await res.json();
+                    detailsDiv.innerHTML = `
+                        <strong>Name:</strong> ${p.name}<br>
+                        <strong>Gender:</strong> ${p.gender}<br>
+                        <strong>Date of Birth:</strong> ${p.dob}<br>
+                        <strong>Pre-existing Conditions:</strong> ${p.pre_existing_conditions}<br>
+                        <strong>Allergies:</strong> ${p.allergies}<br>
+                        <strong>Current Medications:</strong> ${p.current_medications}<br>
+                    `;
+                } else {
+                    detailsDiv.textContent = 'Patient not found.';
+                }
+            } catch (err) {
+                detailsDiv.textContent = 'Error loading patient details.';
+            }
+        });
+    </script>
+</body>
+</html>

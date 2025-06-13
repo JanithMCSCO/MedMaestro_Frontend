@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border: 3px solid #2c5f5f;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-bottom: 2px solid #2c5f5f;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 60px;
+            background-color: #2c5f5f;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .logo::before {
+            content: "MEDICAL\AMAESTRO";
+            white-space: pre;
+        }
+
+        .content {
+            display: flex;
+            padding: 40px;
+            gap: 40px;
+            min-height: 500px;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .patient-info {
+            border: 2px solid #2c5f5f;
+            padding: 20px;
+            background-color: #f8f9fa;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .date-button {
+            border: 2px solid #2c5f5f;
+            padding: 15px;
+            background-color: #e9ecef;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .date-button:hover {
+            background-color: #dee2e6;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .files-section {
+            border: 2px solid #2c5f5f;
+            padding: 30px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+
+        .ai-response-section {
+            border: 2px solid #2c5f5f;
+            padding: 30px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+
+        .ai-avatar {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4a7c59;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .ai-avatar::before {
+            content: "🤖";
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .logo {
+                position: static;
+                margin: 0 auto 20px;
+            }
+            
+            .ai-avatar {
+                position: static;
+                margin: 20px auto 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Test results Screen</h1>
+            <div class="logo"></div>
+        </div>
+        
+        <div class="content">
+            <div class="left-panel">
+                <div class="patient-info">
+                    Test results - &lt;patient name&gt;
+                </div>
+                
+                <div class="date-button">
+                    &lt;Date 1&gt;
+                </div>
+                
+                <div class="date-button">
+                    &lt;Date 2&gt;
+                </div>
+                
+                <div class="date-button">
+                    &lt;Date 3&gt;
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="files-section">
+                    Show available files for selected date
+                </div>
+                
+                <div class="ai-response-section">
+                    Ai model respons
+                </div>
+            </div>
+        </div>
+        
+        <div class="ai-avatar"></div>
+    </div>
+    <div class="container">
+        <h2>Test Results</h2>
+        <div id="testResultsList">
+            Loading test results...
+        </div>
+    </div>
+    <script>
+    window.addEventListener('DOMContentLoaded', async function() {
+        const resultsDiv = document.getElementById('testResultsList');
+        const name = localStorage.getItem('test_results_patient_name');
+        if (!name) {
+            resultsDiv.textContent = 'No patient selected.';
+            return;
+        }
+        try {
+            const res = await fetch(`http://localhost:5000/patient_files?name=${encodeURIComponent(name)}`);
+            if (res.ok) {
+                const files = await res.json();
+                if (files.length === 0) {
+                    resultsDiv.textContent = 'No test results found for this patient.';
+                    return;
+                }
+                let html = '<ul>';
+                files.forEach(file => {
+                    // For each test type, if a file exists, show a link
+                    ['Blood Test', 'CT Scan', 'MRI', 'Urine', 'Stool'].forEach(type => {
+                        if (file[type]) {
+                            const url = file[type];
+                            const filename = url.split('/').pop();
+                            html += `<li>${type}: <a href="${url}" download>${filename}</a></li>`;
+                        }
+                    });
+                });
+                html += '</ul>';
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.textContent = 'Failed to load test results.';
+            }
+        } catch (err) {
+            resultsDiv.textContent = 'Error loading test results.';
+        }
+    });
+    </script>
+</body>
+</html>

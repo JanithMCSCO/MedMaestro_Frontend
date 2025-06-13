@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Welcome Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border: 3px solid #2c5c5c;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+            min-height: 80vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .welcome-title {
+            border: 2px solid #2c5c5c;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 80px;
+            background-color: #2c5c5c;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo .medical-text {
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .logo .maestro-text {
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+
+        .logo .cross {
+            font-size: 20px;
+            margin: 5px 0;
+        }
+
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-top: 80px;
+        }
+
+        .menu-button {
+            width: 400px;
+            padding: 20px 30px;
+            border: 2px solid #2c5c5c;
+            background-color: #f8f9fa;
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+
+        .menu-button:hover {
+            background-color: #2c5c5c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(44, 92, 92, 0.2);
+        }
+
+        .menu-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(44, 92, 92, 0.2);
+        }
+
+        .assistant-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background-color: #2c5c5c;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .assistant-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .assistant-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: #7ed321;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .assistant-avatar::before {
+            content: '🩺';
+            color: #2c5c5c;
+        }
+
+        .assistant-avatar::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background-color: #7ed321;
+            border-radius: 50%;
+            border: 2px solid #2c5c5c;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            .welcome-title {
+                font-size: 20px;
+                padding: 12px 20px;
+            }
+
+            .main-menu {
+                margin-top: 40px;
+                gap: 20px;
+            }
+
+            .menu-button {
+                width: 100%;
+                max-width: 350px;
+                font-size: 18px;
+                padding: 18px 25px;
+            }
+
+            .assistant-icon {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .assistant-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 18px;
+                padding: 10px 15px;
+            }
+
+            .menu-button {
+                font-size: 16px;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="welcome-title" id="welcomeTitle">
+                Welcome
+            </div>
+            <div class="logo">
+                <div class="cross">✚</div>
+                <div class="medical-text">MEDICAL</div>
+                <div class="maestro-text">MAESTRO</div>
+            </div>
+        </div>
+
+        <div class="main-menu">
+            <a href="#appointments" class="menu-button" id="appointments-btn">
+                Appointments
+            </a>
+            <a href="#test-results" class="menu-button" id="test-results-btn">
+                New Test results
+            </a>
+            <a href="#patient-registry" class="menu-button" id="patient-registry-btn">
+                Patient registry
+            </a>
+        </div>
+    </div>
+
+    <div class="assistant-icon">
+        <div class="assistant-avatar"></div>
+    </div>
+
+    <script>
+        // Add click functionality to menu buttons
+        document.getElementById('appointments-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'appointments_screen.html';
+        });
+
+        document.getElementById('test-results-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigating to Test Results...');
+            // In a real app, this would navigate to the test results screen
+        });
+
+        document.getElementById('patient-registry-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigating to Patient Registry...');
+            // In a real app, this would navigate to the patient registry screen
+        });
+
+        // Add click functionality to the assistant icon
+        document.querySelector('.assistant-icon').addEventListener('click', function() {
+            alert('Medical Assistant: Welcome! How can I help you today?');
+        });
+
+        // Add subtle animation on page load
+        window.addEventListener('load', function() {
+            const buttons = document.querySelectorAll('.menu-button');
+            buttons.forEach((button, index) => {
+                button.style.opacity = '0';
+                button.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    button.style.transition = 'all 0.5s ease';
+                    button.style.opacity = '1';
+                    button.style.transform = 'translateY(0)';
+                }, 200 * (index + 1));
+            });
+        });
+
+        // Set the welcome message with the user's full name
+        const fullName = localStorage.getItem('full_name');
+        if (fullName) {
+            document.getElementById('welcomeTitle').textContent = 'Welcome ' + fullName;
+        } else {
+            document.getElementById('welcomeTitle').textContent = 'Welcome';
+        }
+    </script>
+</body>
+</html>
