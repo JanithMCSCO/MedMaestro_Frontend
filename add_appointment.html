@@ -10,7 +10,7 @@
     h2 { color: #2c5c5c; margin-bottom: 20px; }
     form { margin-bottom: 30px; }
     label { display: block; margin-bottom: 6px; color: #333; }
-    input { width: 100%; padding: 10px; margin-bottom: 16px; border: 1.5px solid #2c5c5c; border-radius: 4px; font-size: 1em; }
+    select { width: 100%; padding: 10px; margin-bottom: 16px; border: 1.5px solid #2c5c5c; border-radius: 4px; font-size: 1em; }
     button { padding: 12px 30px; background: #2c5c5c; color: #fff; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; margin-top: 10px; }
     button:hover { background: #18424b; }
     table { width: 100%; border-collapse: collapse; margin-top: 30px; }
@@ -25,9 +25,13 @@
     <h2>Add New Appointment</h2>
     <form id="appointmentForm">
       <label for="time">Time</label>
-      <input type="text" id="time" required>
+      <select id="time" required>
+        <option value="">Select a time</option>
+      </select>
       <label for="patient_name">Name of Patient</label>
-      <input type="text" id="patient_name" required>
+      <select id="patient_name" required>
+        <option value="">Select a patient</option>
+      </select>
       <button type="submit">Add Appointment</button>
       <div class="error" id="appointmentError"></div>
     </form>
@@ -40,6 +44,47 @@
     </table>
   </div>
   <script>
+    // Function to generate time slots
+    function generateTimeSlots() {
+      const timeSelect = document.getElementById('time');
+      const startTime = new Date();
+      startTime.setHours(9, 0, 0); // 9:00 AM
+      const endTime = new Date();
+      endTime.setHours(13, 0, 0); // 1:00 PM
+
+      while (startTime <= endTime) {
+        const timeString = startTime.toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        const option = document.createElement('option');
+        option.value = timeString;
+        option.textContent = timeString;
+        timeSelect.appendChild(option);
+        startTime.setMinutes(startTime.getMinutes() + 15);
+      }
+    }
+
+    // Function to load patients
+    async function loadPatients() {
+      const patientSelect = document.getElementById('patient_name');
+      try {
+        const res = await fetch('/patients');
+        if (res.ok) {
+          const patients = await res.json();
+          patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.name;
+            option.textContent = patient.name;
+            patientSelect.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error loading patients:', error);
+      }
+    }
+
     async function loadAppointments() {
       const tableBody = document.querySelector('#appointmentsTable tbody');
       tableBody.innerHTML = '';
@@ -53,6 +98,7 @@
         });
       }
     }
+
     document.getElementById('appointmentForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const errorDiv = document.getElementById('appointmentError');
@@ -72,7 +118,13 @@
         errorDiv.textContent = data.error || 'Failed to add appointment.';
       }
     });
-    window.addEventListener('DOMContentLoaded', loadAppointments);
+
+    // Initialize the page
+    window.addEventListener('DOMContentLoaded', () => {
+      generateTimeSlots();
+      loadPatients();
+      loadAppointments();
+    });
   </script>
 </body>
 </html> 
