@@ -217,37 +217,46 @@
             appointmentsList.innerHTML = ''; // Clear existing appointments
             
             try {
-                const res = await fetch('/appointments');
+                const res = await fetch('/api/appointments');
+                const data = await res.json();
+                
                 if (res.ok) {
-                    const appointments = await res.json();
-                    
-                    if (appointments.length === 0) {
-                        appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">No appointments scheduled for today</div></div>';
-                        return;
+                    if (Array.isArray(data)) {
+                        if (data.length === 0) {
+                            appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">No appointments scheduled for today</div></div>';
+                            return;
+                        }
+
+                        // Sort appointments by time
+                        data.sort((a, b) => {
+                            const timeA = new Date(`2000/01/01 ${a.time}`);
+                            const timeB = new Date(`2000/01/01 ${b.time}`);
+                            return timeA - timeB;
+                        });
+
+                        data.forEach(appointment => {
+                            const appointmentRow = document.createElement('div');
+                            appointmentRow.className = 'appointment-row';
+                            appointmentRow.innerHTML = `
+                                <div class="timeslot">${appointment.time}</div>
+                                <div class="patient-card">
+                                    <a href="/patient?name=${encodeURIComponent(appointment.patient_name)}" 
+                                       style="text-decoration: none; color: inherit;">
+                                        ${appointment.patient_name}
+                                    </a>
+                                </div>
+                            `;
+                            appointmentsList.appendChild(appointmentRow);
+                        });
+                    } else {
+                        throw new Error('Invalid response format');
                     }
-
-                    // Sort appointments by time
-                    appointments.sort((a, b) => {
-                        const timeA = new Date(`2000/01/01 ${a.time}`);
-                        const timeB = new Date(`2000/01/01 ${b.time}`);
-                        return timeA - timeB;
-                    });
-
-                    appointments.forEach(appointment => {
-                        const appointmentRow = document.createElement('div');
-                        appointmentRow.className = 'appointment-row';
-                        appointmentRow.innerHTML = `
-                            <div class="timeslot">${appointment.time}</div>
-                            <div class="patient-card">${appointment.patient_name}</div>
-                        `;
-                        appointmentsList.appendChild(appointmentRow);
-                    });
                 } else {
-                    appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">Error loading appointments</div></div>';
+                    throw new Error(data.error || 'Failed to load appointments');
                 }
             } catch (error) {
                 console.error('Error loading appointments:', error);
-                appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">Error loading appointments</div></div>';
+                appointmentsList.innerHTML = `<div class="appointment-row"><div class="patient-card">Error: ${error.message}</div></div>`;
             }
         }
 

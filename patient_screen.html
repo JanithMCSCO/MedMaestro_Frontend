@@ -300,171 +300,87 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="page-title">Patient Screen</div>
+            <div class="page-title">Patient Details</div>
             <div class="logo">
-                <div class="cross">✚</div>
                 <div class="medical-text">MEDICAL</div>
+                <div class="cross">✚</div>
                 <div class="maestro-text">MAESTRO</div>
             </div>
         </div>
-
         <div class="main-content">
             <div class="left-panel">
                 <div class="patient-details">
-                    <h3>Patient Details</h3>
-                    <div id="patientDetails">
-                        Loading patient details...
+                    <h3>Patient Information</h3>
+                    <div class="patient-info" id="patientInfo">
+                        <!-- Patient details will be loaded here -->
                     </div>
                 </div>
-
                 <div class="content-row">
                     <div class="transcript-section">
-                        <div class="section-title">Real time transcript</div>
-                        <div class="transcript-content" id="transcript">
-                            <div style="color: #666; font-style: italic;">Doctor: Good morning, John. How are you feeling today?</div>
-                            <div style="color: #333; margin-top: 10px;">Patient: I've been having some chest pain and shortness of breath, especially when I exercise.</div>
-                            <div style="color: #666; font-style: italic; margin-top: 10px;">Doctor: Can you describe the pain? Is it sharp or more of a pressure?</div>
-                            <div style="color: #333; margin-top: 10px;">Patient: It's more like a pressure, and it radiates to my left arm sometimes.</div>
+                        <div class="section-title">Transcript</div>
+                        <div class="transcript-content" id="transcriptContent">
+                            <!-- Transcript content will be loaded here -->
                         </div>
                     </div>
-
                     <div class="recommendations-section">
-                        <div class="section-title">Real time Recommendations</div>
-                        <div class="recommendations-content" id="recommendations">
-                            <div style="padding: 10px; background-color: #e8f5e8; border-left: 4px solid #7ed321; margin-bottom: 10px;">
-                                <strong>Recommended:</strong> Consider ECG and cardiac enzymes given symptoms
-                            </div>
-                            <div style="padding: 10px; background-color: #fff3cd; border-left: 4px solid #ffc107; margin-bottom: 10px;">
-                                <strong>Caution:</strong> Patient allergic to ibuprofen - avoid NSAIDs
-                            </div>
-                            <div style="padding: 10px; background-color: #f8d7da; border-left: 4px solid #dc3545;">
-                                <strong>Alert:</strong> Chest pain with radiation - rule out cardiac cause
-                            </div>
+                        <div class="section-title">Recommendations</div>
+                        <div class="recommendations-content" id="recommendationsContent">
+                            <!-- Recommendations will be loaded here -->
                         </div>
                     </div>
                 </div>
-
                 <div class="notes-section">
-                    <div class="section-title">Manual notes</div>
-                    <textarea class="notes-content" placeholder="Enter your notes here..." id="notes">Patient presents with chest pain and dyspnea on exertion. Pain described as pressure-like with radiation to left arm. No previous cardiac history. Will order ECG and cardiac enzymes. Patient education provided regarding when to seek immediate care.</textarea>
+                    <div class="section-title">Notes</div>
+                    <textarea class="notes-content" id="notesContent" placeholder="Add notes here..."></textarea>
                 </div>
             </div>
-
             <div class="right-panel">
-                <button class="action-button" id="past-visits-btn">Past visits</button>
-                <button class="action-button" id="test-results-btn">Test results</button>
-                <button class="action-button" id="order-tests-btn">Order Tests</button>
-                <button class="action-button" id="prescribe-medication-btn">Prescribe Medication</button>
+                <a href="/test-results" class="action-button" id="test-results-btn">Test Results</a>
+                <a href="/appointments" class="action-button">Appointments</a>
+                <a href="/welcome" class="action-button">Back to Welcome</a>
             </div>
         </div>
+        <div class="assistant-icon">
+            <div class="assistant-avatar"></div>
+        </div>
     </div>
-
-    <div class="assistant-icon">
-        <div class="assistant-avatar"></div>
-    </div>
-
     <script>
-        // Add click functionality to action buttons
-        document.getElementById('past-visits-btn').addEventListener('click', function() {
-            alert('Opening Past Visits...');
-        });
-
-        document.getElementById('test-results-btn').addEventListener('click', function() {
-            const name = localStorage.getItem('selected_patient_name');
-            if (name) {
-                localStorage.setItem('test_results_patient_name', name);
-                window.location.href = '/test-results';
-            }
-        });
-
-        document.getElementById('order-tests-btn').addEventListener('click', function() {
-            alert('Opening Order Tests...');
-        });
-
-        document.getElementById('prescribe-medication-btn').addEventListener('click', function() {
-            alert('Opening Prescription Form...');
-        });
-
-        // Add click functionality to the assistant icon
-        document.querySelector('.assistant-icon').addEventListener('click', function() {
-            alert('Medical Assistant: I can help you with patient care recommendations!');
-        });
-
-        // Simulate real-time transcript updates
-        function simulateTranscriptUpdate() {
-            const transcript = document.getElementById('transcript');
-            const newEntries = [
-                { speaker: 'Doctor', text: 'Any family history of heart disease?' },
-                { speaker: 'Patient', text: 'Yes, my father had a heart attack at 55.' },
-                { speaker: 'Doctor', text: 'I\'d like to run some tests to be safe.' },
-                { speaker: 'Patient', text: 'That sounds good, doctor.' }
-            ];
-
-            let currentIndex = 0;
-            setInterval(() => {
-                if (currentIndex < newEntries.length) {
-                    const entry = newEntries[currentIndex];
-                    const div = document.createElement('div');
-                    div.style.marginTop = '10px';
-                    
-                    if (entry.speaker === 'Doctor') {
-                        div.style.color = '#666';
-                        div.style.fontStyle = 'italic';
-                        div.textContent = `Doctor: ${entry.text}`;
-                    } else {
-                        div.style.color = '#333';
-                        div.textContent = `Patient: ${entry.text}`;
-                    }
-                    
-                    transcript.appendChild(div);
-                    transcript.scrollTop = transcript.scrollHeight;
-                    transcript.classList.add('updating');
-                    
-                    setTimeout(() => {
-                        transcript.classList.remove('updating');
-                    }, 2000);
-                    
-                    currentIndex++;
-                }
-            }, 8000);
-        }
-
-        // Start the simulation after page load
-        setTimeout(simulateTranscriptUpdate, 3000);
-
-        // Auto-save notes functionality
-        const notesTextarea = document.getElementById('notes');
-        notesTextarea.addEventListener('input', function() {
-            // In a real app, this would save to a database
-            console.log('Notes auto-saved:', this.value);
-        });
-
-        window.addEventListener('DOMContentLoaded', async function() {
-            const detailsDiv = document.getElementById('patientDetails');
-            const name = localStorage.getItem('selected_patient_name');
-            if (!name) {
-                detailsDiv.textContent = 'No patient selected.';
+        async function loadPatientDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const patientName = urlParams.get('name');
+            
+            if (!patientName) {
+                document.getElementById('patientInfo').innerHTML = '<div style="color: red;">No patient selected</div>';
                 return;
             }
+
             try {
-                const res = await fetch(`/patients/by_name?name=${encodeURIComponent(name)}`);
+                const res = await fetch(`/patients/by_name?name=${encodeURIComponent(patientName)}`);
                 if (res.ok) {
-                    const p = await res.json();
-                    detailsDiv.innerHTML = `
-                        <strong>Name:</strong> ${p.name}<br>
-                        <strong>Gender:</strong> ${p.gender}<br>
-                        <strong>Date of Birth:</strong> ${p.dob}<br>
-                        <strong>Pre-existing Conditions:</strong> ${p.pre_existing_conditions}<br>
-                        <strong>Allergies:</strong> ${p.allergies}<br>
-                        <strong>Current Medications:</strong> ${p.current_medications}<br>
-                    `;
+                    const patient = await res.json();
+                    if (patient) {
+                        document.getElementById('patientInfo').innerHTML = `
+                            <div><strong>Name:</strong> ${patient.name}</div>
+                            <div><strong>Gender:</strong> ${patient.gender || 'Not specified'}</div>
+                            <div><strong>Date of Birth:</strong> ${patient.dob || 'Not specified'}</div>
+                            <div><strong>Pre-existing Conditions:</strong> ${patient.pre_existing_conditions || 'None'}</div>
+                            <div><strong>Allergies:</strong> ${patient.allergies || 'None'}</div>
+                            <div><strong>Current Medications:</strong> ${patient.current_medications || 'None'}</div>
+                        `;
+                    } else {
+                        document.getElementById('patientInfo').innerHTML = '<div style="color: red;">Patient not found</div>';
+                    }
                 } else {
-                    detailsDiv.textContent = 'Patient not found.';
+                    throw new Error('Failed to load patient details');
                 }
-            } catch (err) {
-                detailsDiv.textContent = 'Error loading patient details.';
+            } catch (error) {
+                console.error('Error loading patient details:', error);
+                document.getElementById('patientInfo').innerHTML = '<div style="color: red;">Error loading patient details</div>';
             }
-        });
+        }
+
+        // Load patient details when the page loads
+        window.addEventListener('DOMContentLoaded', loadPatientDetails);
     </script>
 </body>
 </html>

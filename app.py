@@ -105,16 +105,53 @@ def login():
     else:
         return jsonify({'success': False}), 401
 
-@app.route('/appointments', methods=['GET'])
+@app.route('/api/appointments', methods=['GET'])
 def get_appointments():
     try:
         conn = get_db_connection()
+        print("Fetching appointments from database...")  # Debug log
+        
+        # First, let's check if the appointments table exists
+        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='appointments'")
+        if not cursor.fetchone():
+            print("Appointments table does not exist!")  # Debug log
+            conn.close()
+            return jsonify([])
+            
         appointments = conn.execute('SELECT time, patient_name FROM appointments').fetchall()
+        print(f"Found {len(appointments)} appointments")  # Debug log
+        
+        result = [{'time': row['time'], 'patient_name': row['patient_name']} for row in appointments]
+        print(f"Returning appointments: {result}")  # Debug log
+        
         conn.close()
-        return jsonify([{'time': row['time'], 'patient_name': row['patient_name']} for row in appointments])
+        return jsonify(result)
     except Exception as e:
-        print(f"Error fetching appointments: {str(e)}")
-        return jsonify({'error': 'Failed to fetch appointments'}), 500
+        print(f"Error fetching appointments: {str(e)}")  # Debug log
+        return jsonify({'error': f'Failed to fetch appointments: {str(e)}'}), 500
+
+@app.route('/api/appointments', methods=['POST'])
+def add_appointment():
+    try:
+        data = request.get_json()
+        time = data.get('time')
+        patient_name = data.get('patient_name')
+        
+        if not (time and patient_name):
+            return jsonify({'error': 'Time and patient name are required.'}), 400
+            
+        print(f"Adding appointment - Time: {time}, Patient: {patient_name}")  # Debug log
+        
+        conn = get_db_connection()
+        cursor = conn.execute('INSERT INTO appointments (time, patient_name) VALUES (?, ?)', (time, patient_name))
+        conn.commit()
+        print(f"Appointment added with ID: {cursor.lastrowid}")  # Debug log
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Appointment added successfully'})
+    except Exception as e:
+        print(f"Error adding appointment: {str(e)}")  # Debug log
+        return jsonify({'error': f'Failed to add appointment: {str(e)}'}), 500
 
 # Example endpoint for MongoDB files (expand as needed)
 @app.route('/patient_files', methods=['GET'])
@@ -180,19 +217,6 @@ def add_patient():
     conn = get_db_connection()
     conn.execute('INSERT INTO patients (name, gender, dob, pre_existing_conditions, allergies, current_medications) VALUES (?, ?, ?, ?, ?, ?)',
                  (name, gender, dob, pre_existing_conditions, allergies, current_medications))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True})
-
-@app.route('/appointments', methods=['POST'])
-def add_appointment():
-    data = request.get_json()
-    time = data.get('time')
-    patient_name = data.get('patient_name')
-    if not (time and patient_name):
-        return jsonify({'error': 'Time and patient name are required.'}), 400
-    conn = get_db_connection()
-    conn.execute('INSERT INTO appointments (time, patient_name) VALUES (?, ?)', (time, patient_name))
     conn.commit()
     conn.close()
     return jsonify({'success': True})

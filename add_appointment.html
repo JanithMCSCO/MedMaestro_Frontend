@@ -89,38 +89,40 @@
       const tableBody = document.querySelector('#appointmentsTable tbody');
       tableBody.innerHTML = '';
       try {
-        const res = await fetch('/appointments');
+        const res = await fetch('/api/appointments');
+        const data = await res.json();
+        
         if (res.ok) {
-          const appointments = await res.json();
-          
-          if (appointments.length === 0) {
-            const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="2" style="text-align: center;">No appointments scheduled</td>';
-            tableBody.appendChild(row);
-            return;
+          if (Array.isArray(data)) {
+            if (data.length === 0) {
+              const row = document.createElement('tr');
+              row.innerHTML = '<td colspan="2" style="text-align: center;">No appointments scheduled</td>';
+              tableBody.appendChild(row);
+              return;
+            }
+
+            // Sort appointments by time
+            data.sort((a, b) => {
+              const timeA = new Date(`2000/01/01 ${a.time}`);
+              const timeB = new Date(`2000/01/01 ${b.time}`);
+              return timeA - timeB;
+            });
+
+            data.forEach(a => {
+              const row = document.createElement('tr');
+              row.innerHTML = `<td>${a.time}</td><td>${a.patient_name}</td>`;
+              tableBody.appendChild(row);
+            });
+          } else {
+            throw new Error('Invalid response format');
           }
-
-          // Sort appointments by time
-          appointments.sort((a, b) => {
-            const timeA = new Date(`2000/01/01 ${a.time}`);
-            const timeB = new Date(`2000/01/01 ${b.time}`);
-            return timeA - timeB;
-          });
-
-          appointments.forEach(a => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${a.time}</td><td>${a.patient_name}</td>`;
-            tableBody.appendChild(row);
-          });
         } else {
-          const row = document.createElement('tr');
-          row.innerHTML = '<td colspan="2" style="text-align: center; color: red;">Error loading appointments</td>';
-          tableBody.appendChild(row);
+          throw new Error(data.error || 'Failed to load appointments');
         }
       } catch (error) {
         console.error('Error loading appointments:', error);
         const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="2" style="text-align: center; color: red;">Error loading appointments</td>';
+        row.innerHTML = `<td colspan="2" style="text-align: center; color: red;">Error: ${error.message}</td>`;
         tableBody.appendChild(row);
       }
     }
@@ -129,19 +131,28 @@
       e.preventDefault();
       const errorDiv = document.getElementById('appointmentError');
       errorDiv.textContent = '';
-      const time = document.getElementById('time').value;
-      const patient_name = document.getElementById('patient_name').value;
-      const res = await fetch('/appointments', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ time, patient_name })
-      });
-      if (res.ok) {
-        document.getElementById('appointmentForm').reset();
-        loadAppointments();
-      } else {
+      
+      try {
+        const time = document.getElementById('time').value;
+        const patient_name = document.getElementById('patient_name').value;
+        
+        const res = await fetch('/api/appointments', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ time, patient_name })
+        });
+        
         const data = await res.json();
-        errorDiv.textContent = data.error || 'Failed to add appointment.';
+        
+        if (res.ok) {
+          document.getElementById('appointmentForm').reset();
+          await loadAppointments();
+        } else {
+          throw new Error(data.error || 'Failed to add appointment');
+        }
+      } catch (error) {
+        console.error('Error adding appointment:', error);
+        errorDiv.textContent = error.message;
       }
     });
 
