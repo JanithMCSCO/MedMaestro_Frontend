@@ -46,6 +46,9 @@ def init_sqlite_tables():
     conn.commit()
     conn.close()
 
+# Initialize database tables
+init_sqlite_tables()
+
 # --- MongoDB Setup ---
 mongo_client = MongoClient("mongodb://localhost:27017/")
 mongo_db = mongo_client["medical_maestro"]
@@ -104,10 +107,14 @@ def login():
 
 @app.route('/appointments', methods=['GET'])
 def get_appointments():
-    conn = get_db_connection()
-    appointments = conn.execute('SELECT time, patient_name FROM appointments').fetchall()
-    conn.close()
-    return jsonify([{'time': row['time'], 'patient_name': row['patient_name']} for row in appointments])
+    try:
+        conn = get_db_connection()
+        appointments = conn.execute('SELECT time, patient_name FROM appointments').fetchall()
+        conn.close()
+        return jsonify([{'time': row['time'], 'patient_name': row['patient_name']} for row in appointments])
+    except Exception as e:
+        print(f"Error fetching appointments: {str(e)}")
+        return jsonify({'error': 'Failed to fetch appointments'}), 500
 
 # Example endpoint for MongoDB files (expand as needed)
 @app.route('/patient_files', methods=['GET'])
@@ -211,5 +218,4 @@ def get_patient_by_name():
         return jsonify({'error': 'Patient not found.'}), 404
 
 if __name__ == '__main__':
-    init_sqlite_tables()
     app.run(host='0.0.0.0', port=5000, debug=True)
