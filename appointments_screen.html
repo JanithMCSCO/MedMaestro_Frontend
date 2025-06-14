@@ -197,84 +197,61 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="appointments-title" id="appointmentsTitle">
-                Appointments
-            </div>
+            <div class="appointments-title" id="appointmentsTitle">Today's Appointments</div>
             <div class="logo">
-                <div class="cross">✚</div>
                 <div class="medical-text">MEDICAL</div>
+                <div class="cross">✚</div>
                 <div class="maestro-text">MAESTRO</div>
             </div>
         </div>
-
         <div class="appointments-list" id="appointmentsList">
             <!-- Appointments will be loaded here -->
         </div>
+        <div class="assistant-icon">
+            <div class="assistant-avatar"></div>
+        </div>
     </div>
-
-    <div class="assistant-icon">
-        <div class="assistant-avatar"></div>
-    </div>
-
     <script>
-        // Set the heading to include the current date in DD/mm/YYYY format
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-        document.getElementById('appointmentsTitle').textContent = 'Appointments ' + formatDate(new Date());
-
-        // Add click functionality to the assistant icon
-        document.querySelector('.assistant-icon').addEventListener('click', function() {
-            alert('Medical Assistant: How can I help you today?');
-        });
-
-        // Add hover effect to appointment cards
-        document.querySelectorAll('.patient-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = '#e8f4f8';
-                this.style.transform = 'translateX(5px)';
-                this.style.transition = 'all 0.2s ease';
-            });
-
-            card.addEventListener('mouseleave', function() {
-                this.style.backgroundColor = '#f8f9fa';
-                this.style.transform = 'translateX(0)';
-            });
-        });
-
-        // Fetch and display appointments from backend
         async function loadAppointments() {
-            const container = document.getElementById('appointmentsList');
-            container.innerHTML = '';
+            const appointmentsList = document.getElementById('appointmentsList');
+            appointmentsList.innerHTML = ''; // Clear existing appointments
+            
             try {
-                const response = await fetch('/appointments');
-                if (response.ok) {
-                    const appointments = await response.json();
-                    appointments.forEach(app => {
-                        const row = document.createElement('div');
-                        row.className = 'appointment-row';
-                        row.innerHTML = `
-                            <div class="timeslot">${app.time}</div>
-                            <div class="patient-card"><a href="#" class="patient-link">${app.patient_name}</a></div>
+                const res = await fetch('/appointments');
+                if (res.ok) {
+                    const appointments = await res.json();
+                    
+                    if (appointments.length === 0) {
+                        appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">No appointments scheduled for today</div></div>';
+                        return;
+                    }
+
+                    // Sort appointments by time
+                    appointments.sort((a, b) => {
+                        const timeA = new Date(`2000/01/01 ${a.time}`);
+                        const timeB = new Date(`2000/01/01 ${b.time}`);
+                        return timeA - timeB;
+                    });
+
+                    appointments.forEach(appointment => {
+                        const appointmentRow = document.createElement('div');
+                        appointmentRow.className = 'appointment-row';
+                        appointmentRow.innerHTML = `
+                            <div class="timeslot">${appointment.time}</div>
+                            <div class="patient-card">${appointment.patient_name}</div>
                         `;
-                        // Add click event to patient name
-                        row.querySelector('.patient-link').addEventListener('click', function(e) {
-                            e.preventDefault();
-                            localStorage.setItem('selected_patient_name', app.patient_name);
-                            window.location.href = '/patient';
-                        });
-                        container.appendChild(row);
+                        appointmentsList.appendChild(appointmentRow);
                     });
                 } else {
-                    container.innerHTML = '<div style="color:red;">Failed to load appointments.</div>';
+                    appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">Error loading appointments</div></div>';
                 }
-            } catch (err) {
-                container.innerHTML = '<div style="color:red;">Server error. Please try again later.</div>';
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+                appointmentsList.innerHTML = '<div class="appointment-row"><div class="patient-card">Error loading appointments</div></div>';
             }
         }
+
+        // Load appointments when the page loads
         window.addEventListener('DOMContentLoaded', loadAppointments);
     </script>
 </body>

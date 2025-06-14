@@ -88,14 +88,40 @@
     async function loadAppointments() {
       const tableBody = document.querySelector('#appointmentsTable tbody');
       tableBody.innerHTML = '';
-      const res = await fetch('/appointments');
-      if (res.ok) {
-        const appointments = await res.json();
-        appointments.forEach(a => {
+      try {
+        const res = await fetch('/appointments');
+        if (res.ok) {
+          const appointments = await res.json();
+          
+          if (appointments.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="2" style="text-align: center;">No appointments scheduled</td>';
+            tableBody.appendChild(row);
+            return;
+          }
+
+          // Sort appointments by time
+          appointments.sort((a, b) => {
+            const timeA = new Date(`2000/01/01 ${a.time}`);
+            const timeB = new Date(`2000/01/01 ${b.time}`);
+            return timeA - timeB;
+          });
+
+          appointments.forEach(a => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${a.time}</td><td>${a.patient_name}</td>`;
+            tableBody.appendChild(row);
+          });
+        } else {
           const row = document.createElement('tr');
-          row.innerHTML = `<td>${a.time}</td><td>${a.patient_name}</td>`;
+          row.innerHTML = '<td colspan="2" style="text-align: center; color: red;">Error loading appointments</td>';
           tableBody.appendChild(row);
-        });
+        }
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="2" style="text-align: center; color: red;">Error loading appointments</td>';
+        tableBody.appendChild(row);
       }
     }
 
