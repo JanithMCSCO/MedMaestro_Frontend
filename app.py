@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
 from pymongo import MongoClient
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -41,6 +42,13 @@ def init_sqlite_tables():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             time TEXT NOT NULL,
             patient_name TEXT NOT NULL
+        )
+    ''')
+    # llm_server_ip table
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS llm_server_ip (
+            id INTEGER PRIMARY KEY,
+            ip VARCHAR(15) NOT NULL
         )
     ''')
     conn.commit()
@@ -240,6 +248,57 @@ def get_patient_by_name():
         })
     else:
         return jsonify({'error': 'Patient not found.'}), 404
+
+@app.route('/llm-server')
+def llm_server():
+    return app.send_static_file('llm_server.html')
+
+@app.route('/api/llm-server-ip', methods=['GET'])
+def get_llm_server_ip():
+    try:
+        conn = get_db_connection()
+        cursor = conn.execute('SELECT ip FROM llm_server_ip WHERE id = 1')
+        result = cursor.fetchone()
+        conn.close()
+        
+        if result:
+            return jsonify({'ip': result[0]})
+        else:
+            return jsonify({'ip': None})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/llm-server-ip', methods=['POST'])
+def update_llm_server_ip():
+    try:
+        data = request.get_json()
+        if not data or 'ip' not in data:
+            return jsonify({'error': 'IP address is required'}), 400
+            
+        ip = data['ip']
+        # Basic IP validation
+        if not re.match(r'^(\d{1,3}\.){3}\d{1,3}$', ip):
+            return jsonify({'error': 'Invalid IP address format'}), 400
+            
+        conn = get_db_connection()
+        
+        # Check if record exists
+        cursor = conn.execute('SELECT id FROM llm_server_ip WHERE id = 1')
+        if cursor.fetchone():
+            conn.execute('UPDATE llm_server_ip SET ip = ? WHERE id = 1', (ip,))
+        else:
+            conn.execute('INSERT INTO llm_server_ip (id, ip) VALUES (1, ?)', (ip,))
+            
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'message': 'IP address updated successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/chatbot')
+def chatbot():
+    return app.send_static_file('chatbot.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

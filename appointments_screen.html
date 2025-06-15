@@ -46,31 +46,13 @@
         }
 
         .logo {
-            width: 120px;
-            height: 80px;
-            background-color: #2c5c5c;
-            border-radius: 8px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
         }
-
-        .logo .medical-text {
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-
-        .logo .maestro-text {
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-
-        .logo .cross {
-            font-size: 20px;
-            margin: 5px 0;
+        .logo img {
+            height: 60px;
+            width: auto;
         }
 
         .appointments-list {
@@ -106,50 +88,17 @@
 
         .assistant-icon {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 80px;
-            height: 80px;
-            background-color: #2c5c5c;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            z-index: 1000;
         }
-
-        .assistant-icon:hover {
-            transform: scale(1.05);
-        }
-
-        .assistant-avatar {
-            width: 50px;
-            height: 50px;
-            background-color: #7ed321;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            position: relative;
-        }
-
-        .assistant-avatar::before {
-            content: '🩺';
-            color: #2c5c5c;
-        }
-
-        .assistant-avatar::after {
-            content: '';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 12px;
-            height: 12px;
-            background-color: #7ed321;
-            border-radius: 50%;
-            border: 2px solid #2c5c5c;
+        .assistant-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         /* Responsive design */
@@ -185,12 +134,6 @@
                 bottom: 20px;
                 right: 20px;
             }
-
-            .assistant-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
-            }
         }
     </style>
 </head>
@@ -199,16 +142,14 @@
         <div class="header">
             <div class="appointments-title" id="appointmentsTitle">Today's Appointments</div>
             <div class="logo">
-                <div class="medical-text">MEDICAL</div>
-                <div class="cross">✚</div>
-                <div class="maestro-text">MAESTRO</div>
+                <img src="MedMaestro.png" alt="MedMaestro Logo">
             </div>
         </div>
         <div class="appointments-list" id="appointmentsList">
             <!-- Appointments will be loaded here -->
         </div>
         <div class="assistant-icon">
-            <div class="assistant-avatar"></div>
+            <img src="MedMaestroAssistant.png" alt="MedMaestro Assistant">
         </div>
     </div>
     <script>
@@ -262,6 +203,11 @@
 
         // Load appointments when the page loads
         window.addEventListener('DOMContentLoaded', loadAppointments);
+        
+        // Assistant icon click handler
+        document.querySelector('.assistant-icon').addEventListener('click', function() {
+            window.location.href = '/chatbot';
+        });
     </script>
 </body>
 </html>

@@ -17,7 +17,11 @@
     <h1>Admin Dashboard</h1>
     <button class="admin-btn" onclick="window.location.href='/add-user'">Add New User</button>
     <button class="admin-btn" onclick="window.location.href='/add-patient'">Add New Patient</button>
-    <button class="admin-btn" onclick="window.location.href='/add-appointment'">Add New Appointment</button>
+    <div class="button-container">
+      <a href="/add-appointment" class="dashboard-button">Add Appointment</a>
+      <a href="/appointments" class="dashboard-button">View Appointments</a>
+      <a href="/llm-server" class="dashboard-button">LLM Server IP</a>
+    </div>
   </div>
 </body>
 </html> 

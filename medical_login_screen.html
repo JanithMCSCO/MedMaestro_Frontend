@@ -48,35 +48,16 @@
         }
 
         .logo {
-            width: 200px;
-            height: 100px;
-            background-color: #2c5f5f;
-            border-radius: 8px;
+            width: 120px;
+            height: 80px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            text-align: center;
-            line-height: 1.2;
-            margin-bottom: 40px;
-            position: relative;
+            margin-bottom: 20px;
         }
-
-        .logo::before {
-            content: "MEDICAL\AMAESTRO";
-            white-space: pre;
-        }
-
-        .logo::after {
-            content: "✚";
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 20px;
-            color: white;
+        .logo img {
+            height: 60px;
+            width: auto;
         }
 
         .login-form {
@@ -177,7 +158,9 @@
         </div>
         
         <div class="content">
-            <div class="logo"></div>
+            <div class="logo">
+                <img src="MedMaestro.png" alt="MedMaestro Logo">
+            </div>
             
             <form id="loginForm" class="login-form">
                 <div class="form-row">
