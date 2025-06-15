@@ -248,30 +248,48 @@
             showLoading(true);
             
             try {
-                // Prepare the query with user input
-                const query = `<User Input>${message}</User Input>`;
+                // Prepare the request body in OpenAI format
+                const requestBody = {
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are a helpful medical assistant to a medical professional. Provide detailed responses to the questions that are asked of you."
+                        },
+                        {
+                            role: "user",
+                            content: `<User Input>${message}</User Input>`
+                        }
+                    ],
+                    max_tokens: 400,
+                    temperature: 0.7,
+                    top_p: 0.9,
+                    repetition_penalty: 1.1
+                };
                 
-                // Send to LLM server
-                const response = await fetch(`http://${serverUrl}/api/chat`, {
+                // Send to LLM server using OpenAI-compatible endpoint
+                const response = await fetch(`http://${serverUrl}:8000/v1/chat/completions`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        message: query,
-                        context: 'medical_assistant'
-                    })
+                    body: JSON.stringify(requestBody)
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    addMessage(data.response || 'No response received from assistant.');
+                    // Extract the response from OpenAI format
+                    const assistantMessage = data.choices && data.choices[0] && data.choices[0].message 
+                        ? data.choices[0].message.content 
+                        : 'No response received from assistant.';
+                    addMessage(assistantMessage);
                 } else {
-                    throw new Error(`Server responded with status: ${response.status}`);
+                    const errorText = await response.text();
+                    throw new Error(`Server responded with status: ${response.status} - ${errorText}`);
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
-                showError('Failed to get response from assistant. Please check the LLM server connection.');
+                showError(`Failed to get response from assistant: ${error.message}`);
             } finally {
                 showLoading(false);
             }
